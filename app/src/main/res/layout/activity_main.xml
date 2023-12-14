@@ -6,123 +6,79 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="410dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <Button
+            android:id="@+id/btnFazer"
+            android:layout_width="204dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/design_default_color_primary"
+            android:text="Em Andamento"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnFeito"
+            android:layout_width="204dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/design_default_color_primary"
+            android:text="Concluído"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="1dp">
 
-    <TextView
-        android:id="@+id/tvApp"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#B6ECB8"
-        android:fontFamily="@font/audiowide"
-        android:gravity="center|center_horizontal"
-        android:text="Gerenciador de Tarefas"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display4"
-        android:textColor="#283593"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:typeface="sans"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/tvApp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="1dp"
+            android:background="#B6ECB8"
+            android:fontFamily="@font/audiowide"
+            android:gravity="center|center_horizontal"
+            android:text="Gerenciador de Tarefas"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+            android:textColor="#283593"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
 
-    <Button
-        android:id="@+id/btnFazer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/design_default_color_primary"
-        android:text="Em Andamento"
-        app:layout_constraintEnd_toStartOf="@+id/btnFeito"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvApp" />
+        <Button
+            android:id="@+id/btnCadastrar"
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:backgroundTint="#00695C"
+            android:text="Cadastrar"
+            android:textAlignment="center"
+            android:textColor="#FF8F00"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnFeito"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/design_default_color_primary"
-        android:text="Concluído"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnFazer"
-        app:layout_constraintTop_toBottomOf="@+id/tvApp" />
-
-    <Button
-        android:id="@+id/btnCadastrar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/design_default_color_primary"
-        android:text="Cadastrar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvApp" />
-
-
-    <FrameLayout
-        android:id="@+id/frmTarefa"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fcvFragment"
+        android:name="com.wprotheus.lista_tarefas.view.FragmentToDoList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="55dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
 
-    </FrameLayout>
-
-    <EditText
-        android:id="@+id/etTitulo"
-        android:layout_width="0dp"
-        android:layout_height="53dp"
-        android:layout_marginTop="16dp"
-        android:hint="Título"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFeito" />
-
-    <EditText
-        android:id="@+id/etDescricao"
-        android:layout_width="0dp"
-        android:layout_height="53dp"
-        android:layout_below="@+id/etTitulo"
-        android:layout_marginTop="8dp"
-        android:hint="Descrição"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etTitulo" />
-
-    <EditText
-        android:id="@+id/etData"
-        android:layout_width="0dp"
-        android:layout_height="53dp"
-        android:layout_below="@+id/etDescricao"
-        android:layout_marginTop="8dp"
-        android:hint="Data"
-        android:inputType="date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etDescricao" />
-
-    <Button
-        android:id="@+id/btnAdicionar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Adicionar Tarefa"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etData" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

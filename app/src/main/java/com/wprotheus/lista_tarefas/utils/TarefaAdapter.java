@@ -1,65 +1,82 @@
 package com.wprotheus.lista_tarefas.utils;
 
+
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wprotheus.lista_tarefas.R;
+import com.wprotheus.lista_tarefas.model.DbSqlite;
 import com.wprotheus.lista_tarefas.model.Tarefa;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.TarefaViewHolder> {
-    private List<Tarefa> listaTarefas;
+public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.TarefaHolder> {
+    private Context contexto;
+    private DbSqlite dbSqlite;
+    private List<Tarefa> tarefaList;
 
-    public TarefaAdapter(List<Tarefa> listaTarefas) {
-        this.listaTarefas = listaTarefas;
+    public TarefaAdapter(Context contexto, DbSqlite dbSqlite) {
+        this.contexto = contexto;
+        this.dbSqlite = dbSqlite;
+        this.tarefaList = new ArrayList<>();
+    }
+
+    public class TarefaHolder extends RecyclerView.ViewHolder {
+        public CheckBox cbSatus;
+        private TextView tietTitulo;
+        private TextView tietDescricao;
+        private TextView tietData;
+
+        public TarefaHolder(@NonNull View itemView) {
+            super(itemView);
+            tietTitulo = itemView.findViewById(R.id.tietTitulo);
+            tietDescricao = itemView.findViewById(R.id.tietDescricao);
+            tietData = itemView.findViewById(R.id.tietDataFim);
+            cbSatus = itemView.findViewById(R.id.cbStatus);
+            dbSqlite.tarefaList(false);
+        }
+    }
+
+    public void updateTarefaList(boolean status) {
+        tarefaList = dbSqlite.tarefaList(status);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public TarefaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tarefa, parent, false);
-        return new TarefaViewHolder(view);
+    public TarefaAdapter.TarefaHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new TarefaHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_itens_lista, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TarefaViewHolder holder, int position) {
-        Tarefa tarefa = listaTarefas.get(position);
-        holder.tvTitulo.setText(tarefa.getTitulo());
+    public void onBindViewHolder(@NonNull TarefaHolder holder, @SuppressLint("RecyclerView") int position) {
+        if (position != RecyclerView.NO_POSITION) {
+            Tarefa tarefa = tarefaList.get(position);
+            holder.tietTitulo.setText(tarefa.getTitulo());
+            holder.tietDescricao.setText(tarefa.getDescricao());
+            holder.tietData.setText(tarefa.getDataFim());
+            holder.cbSatus.setChecked(tarefa.isStatus());
 
-        holder.btnEditar.setOnClickListener(v -> Toast.makeText(v.getContext(), "Editar: " + tarefa.getTitulo(), Toast.LENGTH_SHORT).show());
-
-        holder.btnExcluir.setOnClickListener(v -> {
-
-
-            Toast.makeText(v.getContext(), "Excluir: " + tarefa.getTitulo(), Toast.LENGTH_SHORT).show();
-            listaTarefas.remove(position);
-            notifyItemRemoved(position);
-        });
+            holder.cbSatus.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                tarefa.setStatus(isChecked);
+                dbSqlite.editarTarefa(tarefa);
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return listaTarefas.size();
-    }
-
-    public static class TarefaViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitulo;
-        Button btnEditar;
-        Button btnExcluir;
-
-        public TarefaViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTitulo = itemView.findViewById(R.id.tvTitulo);
-            btnEditar = itemView.findViewById(R.id.btnEditar);
-            btnExcluir = itemView.findViewById(R.id.btnExcluir);
-        }
+        return tarefaList.size();
     }
 }

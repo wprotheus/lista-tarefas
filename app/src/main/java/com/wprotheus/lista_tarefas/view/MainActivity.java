@@ -1,47 +1,46 @@
 package com.wprotheus.lista_tarefas.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.wprotheus.lista_tarefas.R;
 
-public class MainActivity extends AppCompatActivity {
-    private Button btnFazer;
-    private Button btnFeito;
-    private Button btnCadastrar;
-    private FazerFragment fazerFragment;
-    private FeitoFragment feitoFragment;
-    private CadastrarFragment cadastrarFragment;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnFazer = findViewById(R.id.btnFazer);
-        btnFeito = findViewById(R.id.btnFeito);
-        btnCadastrar = findViewById(R.id.btnCadastrar);
+        findViewById(R.id.btnFazer).setOnClickListener(this::onClick);
+        findViewById(R.id.btnFeito).setOnClickListener(this::onClick);
+        findViewById(R.id.btnCadastrar).setOnClickListener(this::onClick);
+        mostrarFragmento(new FragmentToDoList());
 
-        fazerFragment = new FazerFragment();
-        feitoFragment = new FeitoFragment();
-        cadastrarFragment = new CadastrarFragment();
+    }
 
-        btnFazer.setOnClickListener(v -> {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frmTarefa, fazerFragment);
-            transaction.commit();
-        });
-        btnFeito.setOnClickListener(v -> {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frmTarefa, feitoFragment);
-            transaction.commit();
-        });
-        btnCadastrar.setOnClickListener(v -> {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frmTarefa, cadastrarFragment);
-            transaction.commit();
-        });
+    @Override
+    public void onClick(View view) {
+        Fragment mainFragment = null;
+
+        if (view.getId() == R.id.btnCadastrar) {
+            mainFragment = new FragmentAddTask();
+        } else if (view.getId() == R.id.btnFeito) {
+            mainFragment = new FragmentDoneList();
+        } else if (view.getId() == R.id.btnFazer) {
+            mainFragment = new FragmentToDoList();
+        }
+        mostrarFragmento(mainFragment);
+    }
+
+    private void mostrarFragmento(Fragment fragment) {
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fcvFragment, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

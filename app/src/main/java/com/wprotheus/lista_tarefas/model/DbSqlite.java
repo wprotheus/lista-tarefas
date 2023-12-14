@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,20 +21,22 @@ public class DbSqlite extends SQLiteOpenHelper {
     private static final String DESCRICAO = "DESCRICAO";
     private static final String DATA = "DATA";
     private static final String STATUS = "STATUS";
+    private static final String ADICIONADA = "ADICIONADA";
 
-    public DbSqlite(@Nullable Context context)
-    {
+    public DbSqlite(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         StringBuilder query = new StringBuilder();
-        query.append("CREATE TABLE tb_tarefa (")
+        query.append("CREATE TABLE ")
+                .append(TABLE_NAME).append(" (")
                 .append("ID INTEGER PRIMARY KEY AUTOINCREMENT, ")
                 .append("TITULO TEXT NOT NULL, ")
                 .append("DESCRICAO TEXT NOT NULL, ")
                 .append("DATA TEXT NOT NULL, ")
-                .append("STATUS TEXT NOT NULL");
+                .append("STATUS BOOLEAN NOT NULL)");
         db.execSQL(query.toString());
     }
 
@@ -45,16 +46,17 @@ public class DbSqlite extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void adicionarTarefa(Tarefa tarefa)
-    {
+    public long adicionarTarefa(Tarefa tarefa) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long tarefaID = -1;
         try {
             db.beginTransaction();
             ContentValues values = new ContentValues();
             values.put(TITULO, tarefa.getTitulo());
             values.put(DESCRICAO, tarefa.getDescricao());
-            values.put(DATA, String.valueOf(tarefa.getDataFim()));
-            db.insert(TABLE_NAME, null, values);
+            values.put(DATA, tarefa.getDataFim());
+            values.put(STATUS, tarefa.isStatus());
+            tarefaID = db.insert(TABLE_NAME, null, values);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             throw new RuntimeException();
@@ -62,29 +64,30 @@ public class DbSqlite extends SQLiteOpenHelper {
             db.endTransaction();
             db.close();
         }
+        return tarefaID;
     }
 
 
     @SuppressLint("Range")
-    public List<Tarefa> tarefaList()
-    {
+    public List<Tarefa> tarefaList(boolean status) {
         SQLiteDatabase database = getReadableDatabase();
-        String[] colunas = {ID, TITULO, DESCRICAO, DATA};
+        String[] colunas = {ID, TITULO, DESCRICAO, DATA, STATUS};
         List<Tarefa> tarefaList = new ArrayList<>();
 
-        try (Cursor cursor = database.query(TABLE_NAME, colunas, null, null, null, null, null))
-        {
-            while (cursor.moveToNext())
-            {
+        String situacaoStatus = STATUS + " = ?";
+        String[] condicaoStatus = {String.valueOf(status ? 1 : 0)};
+
+        try (Cursor cursor = database.query(TABLE_NAME, colunas, situacaoStatus, condicaoStatus, null, null, null)) {
+            while (cursor.moveToNext()) {
                 Tarefa t = new Tarefa();
                 t.setId(cursor.getInt(cursor.getColumnIndex(ID)));
                 t.setTitulo(cursor.getString(cursor.getColumnIndex(TITULO)));
                 t.setDescricao(cursor.getString(cursor.getColumnIndex(DESCRICAO)));
-                t.setDataFim(LocalDateTime.parse(cursor.getString(cursor.getColumnIndex(DATA))));
+                t.setDataFim(cursor.getString(cursor.getColumnIndex(DATA)));
+                t.setStatus(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(STATUS))));
                 tarefaList.add(t);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException();
         } finally {
             database.close();
@@ -92,21 +95,21 @@ public class DbSqlite extends SQLiteOpenHelper {
         return tarefaList;
     }
 
-    public void apagarTarefa(int id)
-    {
+
+    public void apagarTarefa(int id) {
         SQLiteDatabase database = getReadableDatabase();
         String tarefaID = "ID LIKE ?";
         String[] IDSelecionado = {String.valueOf(id)};
         database.delete(TABLE_NAME, tarefaID, IDSelecionado);
     }
 
-    public void editarTarefa(Tarefa tarefa)
-    {
+    public void editarTarefa(Tarefa tarefa) {
         SQLiteDatabase database = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TITULO, tarefa.getTitulo());
         values.put(DESCRICAO, tarefa.getDescricao());
-        values.put(DATA, String.valueOf(tarefa.getDataFim()));
+        values.put(DATA, tarefa.getDataFim());
+        values.put(STATUS, tarefa.isStatus());
 
         String selection = "ID LIKE ?";
         String[] selectionId = {String.valueOf(tarefa.getId())};
